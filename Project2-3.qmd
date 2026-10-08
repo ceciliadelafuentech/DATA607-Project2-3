@@ -1,0 +1,14 @@
+---
+title: "Project2-3"
+author: "Cecilia De La Fuente Chavez"
+format: html
+execute:
+  echo: true
+editor: visual
+---
+
+## Approach Deliverable
+
+### Overview
+
+The third dataset I chose for Project 2 is Shanice's [data on U.S. cities that reported car thefts](https://docs.google.com/spreadsheets/d/1-6614t_Ata5k7oESrm-HAdF1uOe8aPGRaQECl44GYeE/edit?gid=0#gid=0). The cities are currently stored as column groups, I will use `pivot_longer()` to reshape the dataset into a tidy format. The goal will be to have one row for each city and month, with columns for the number of Kia/Hyundai vehicles, the total number of vehicles, and the percentage. For the analysis, I could compare the percentage of Kia/Hyundai vehicles across cities and examine how the percentages change over months. I can also use a visualization to show differences between cities and changes over time.
