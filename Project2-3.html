@@ -24,6 +24,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -79,6 +114,365 @@ ul.task-list li input[type="checkbox"] {
 <h3 class="anchored" data-anchor-id="overview">Overview</h3>
 <p>The third dataset I chose for Project 2 is Shanice’s <a href="https://docs.google.com/spreadsheets/d/1-6614t_Ata5k7oESrm-HAdF1uOe8aPGRaQECl44GYeE/edit?gid=0#gid=0">data on U.S. cities that reported car thefts</a>. The cities are currently stored as column groups, I will use <code>pivot_longer()</code> to reshape the dataset into a tidy format. The goal will be to have one row for each city and month, with columns for the number of Kia/Hyundai vehicles, the total number of vehicles, and the percentage. For the analysis, I could compare the percentage of Kia/Hyundai vehicles across cities and examine how the percentages change over months. I can also use a visualization to show differences between cities and changes over time.</p>
 </section>
+</section>
+<section id="code-base-deliverable" class="level2">
+<h2 class="anchored" data-anchor-id="code-base-deliverable">Code Base Deliverable</h2>
+<section id="load-libraries" class="level3">
+<h3 class="anchored" data-anchor-id="load-libraries">Load libraries</h3>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
+✔ dplyr     1.2.1     ✔ readr     2.2.0
+✔ forcats   1.0.1     ✔ stringr   1.6.0
+✔ ggplot2   4.0.3     ✔ tibble    3.3.1
+✔ lubridate 1.9.5     ✔ tidyr     1.3.2
+✔ purrr     1.2.2     
+── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()
+ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+</div>
+</section>
+<section id="data-and-transformations" class="level3">
+<h3 class="anchored" data-anchor-id="data-and-transformations">Data and transformations</h3>
+<p>Load CSV from Github</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(   <span class="st">"https://raw.githubusercontent.com/ceciliadelafuentech/DATA607-Project2-3/refs/heads/main/Motherboard%20VICE%20News%20Kia%20Hyundai%20Theft%20Data%20-%20Data.csv"</span> )  </span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>New names:
+Rows: 46 Columns: 211
+── Column specification
+──────────────────────────────────────────────────────── Delimiter: "," chr
+(211): ...1, Denver, ...3, ...4, El Paso, ...6, ...7, Portland, ...9, .....
+ℹ Use `spec()` to retrieve the full column specification for this data. ℹ
+Specify the column types or set `show_col_types = FALSE` to quiet this message.
+• `` -&gt; `...1`
+• `` -&gt; `...3`
+• `` -&gt; `...4`
+• `` -&gt; `...6`
+• `` -&gt; `...7`
+• `` -&gt; `...9`
+• `` -&gt; `...10`
+• `` -&gt; `...12`
+• `` -&gt; `...13`
+• `` -&gt; `...15`
+• `` -&gt; `...16`
+• `` -&gt; `...18`
+• `` -&gt; `...19`
+• `` -&gt; `...21`
+• `` -&gt; `...22`
+• `` -&gt; `...24`
+• `` -&gt; `...25`
+• `` -&gt; `...27`
+• `` -&gt; `...28`
+• `` -&gt; `...30`
+• `` -&gt; `...31`
+• `` -&gt; `...33`
+• `` -&gt; `...34`
+• `` -&gt; `...36`
+• `` -&gt; `...37`
+• `` -&gt; `...39`
+• `` -&gt; `...40`
+• `` -&gt; `...42`
+• `` -&gt; `...43`
+• `` -&gt; `...45`
+• `` -&gt; `...46`
+• `` -&gt; `...48`
+• `` -&gt; `...49`
+• `` -&gt; `...51`
+• `` -&gt; `...52`
+• `` -&gt; `...54`
+• `` -&gt; `...55`
+• `` -&gt; `...57`
+• `` -&gt; `...58`
+• `` -&gt; `...60`
+• `` -&gt; `...61`
+• `` -&gt; `...63`
+• `` -&gt; `...64`
+• `` -&gt; `...66`
+• `` -&gt; `...67`
+• `` -&gt; `...69`
+• `` -&gt; `...70`
+• `` -&gt; `...72`
+• `` -&gt; `...73`
+• `` -&gt; `...75`
+• `` -&gt; `...76`
+• `` -&gt; `...78`
+• `` -&gt; `...79`
+• `` -&gt; `...81`
+• `` -&gt; `...82`
+• `` -&gt; `...84`
+• `` -&gt; `...85`
+• `` -&gt; `...87`
+• `` -&gt; `...88`
+• `` -&gt; `...90`
+• `` -&gt; `...91`
+• `` -&gt; `...93`
+• `` -&gt; `...94`
+• `` -&gt; `...96`
+• `` -&gt; `...97`
+• `` -&gt; `...99`
+• `` -&gt; `...100`
+• `` -&gt; `...102`
+• `` -&gt; `...103`
+• `` -&gt; `...105`
+• `` -&gt; `...106`
+• `` -&gt; `...108`
+• `` -&gt; `...109`
+• `` -&gt; `...111`
+• `` -&gt; `...112`
+• `` -&gt; `...114`
+• `` -&gt; `...115`
+• `` -&gt; `...117`
+• `` -&gt; `...118`
+• `` -&gt; `...120`
+• `` -&gt; `...121`
+• `` -&gt; `...123`
+• `` -&gt; `...124`
+• `` -&gt; `...126`
+• `` -&gt; `...127`
+• `` -&gt; `...129`
+• `` -&gt; `...130`
+• `` -&gt; `...132`
+• `` -&gt; `...133`
+• `` -&gt; `...135`
+• `` -&gt; `...136`
+• `` -&gt; `...138`
+• `` -&gt; `...139`
+• `` -&gt; `...141`
+• `` -&gt; `...142`
+• `` -&gt; `...144`
+• `` -&gt; `...145`
+• `` -&gt; `...147`
+• `` -&gt; `...148`
+• `` -&gt; `...150`
+• `` -&gt; `...151`
+• `` -&gt; `...153`
+• `` -&gt; `...154`
+• `` -&gt; `...156`
+• `` -&gt; `...157`
+• `` -&gt; `...159`
+• `` -&gt; `...160`
+• `` -&gt; `...162`
+• `` -&gt; `...163`
+• `` -&gt; `...165`
+• `` -&gt; `...166`
+• `` -&gt; `...168`
+• `` -&gt; `...169`
+• `` -&gt; `...171`
+• `` -&gt; `...172`
+• `` -&gt; `...174`
+• `` -&gt; `...175`
+• `` -&gt; `...177`
+• `` -&gt; `...178`
+• `` -&gt; `...180`
+• `` -&gt; `...181`
+• `` -&gt; `...183`
+• `` -&gt; `...184`
+• `` -&gt; `...186`
+• `` -&gt; `...187`
+• `` -&gt; `...189`
+• `` -&gt; `...190`
+• `` -&gt; `...192`
+• `` -&gt; `...193`
+• `` -&gt; `...195`
+• `` -&gt; `...196`
+• `` -&gt; `...198`
+• `` -&gt; `...199`
+• `` -&gt; `...201`
+• `` -&gt; `...202`
+• `` -&gt; `...204`
+• `` -&gt; `...205`
+• `` -&gt; `...207`
+• `` -&gt; `...208`
+• `` -&gt; `...210`
+• `` -&gt; `...211`</code></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(df)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 211
+  ...1   Denver   ...3  ...4  `El Paso` ...6  ...7  Portland ...9  ...10 Atlanta
+  &lt;chr&gt;  &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;     &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;    &lt;chr&gt; &lt;chr&gt; &lt;chr&gt;  
+1 &lt;NA&gt;   Kia/Hyu… All   Perc… Kia/Hyun… All   Perc… Kia/Hyu… All   Perc… Kia/Hy…
+2 Dec/19 48       615   8%    13        103   13%   13       592   2%    &lt;NA&gt;   
+3 Jan/20 21       519   4%    9         95    9%    12       559   2%    &lt;NA&gt;   
+4 Feb/20 28       402   7%    5         64    8%    10       498   2%    &lt;NA&gt;   
+5 Mar/20 35       508   7%    6         75    8%    4        465   1%    &lt;NA&gt;   
+6 Apr/20 39       616   6%    1         57    2%    7        488   1%    &lt;NA&gt;   
+# ℹ 200 more variables: ...12 &lt;chr&gt;, ...13 &lt;chr&gt;, Chicago &lt;chr&gt;, ...15 &lt;chr&gt;,
+#   ...16 &lt;chr&gt;, `Virginia Beach` &lt;chr&gt;, ...18 &lt;chr&gt;, ...19 &lt;chr&gt;,
+#   Louisville &lt;chr&gt;, ...21 &lt;chr&gt;, ...22 &lt;chr&gt;, `San Diego` &lt;chr&gt;, ...24 &lt;chr&gt;,
+#   ...25 &lt;chr&gt;, Sacramento &lt;chr&gt;, ...27 &lt;chr&gt;, ...28 &lt;chr&gt;, Dallas &lt;chr&gt;,
+#   ...30 &lt;chr&gt;, ...31 &lt;chr&gt;, `Fort Worth` &lt;chr&gt;, ...33 &lt;chr&gt;, ...34 &lt;chr&gt;,
+#   Bakersfield &lt;chr&gt;, ...36 &lt;chr&gt;, ...37 &lt;chr&gt;, `Omaha, NE` &lt;chr&gt;,
+#   ...39 &lt;chr&gt;, ...40 &lt;chr&gt;, `Lubbock, TX` &lt;chr&gt;, ...42 &lt;chr&gt;, ...43 &lt;chr&gt;, …</code></pre>
+</div>
+</div>
+<p>Prepare the car theft dataset by renaming the month column, removing rows without a month, and assigning consistent temporary names to each city’s three columns.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Rename month column and remove NAs</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>car_thefts <span class="ot">&lt;-</span> df <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">month =</span> <span class="dv">1</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span><span class="fu">is.na</span>(month))</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Get city names from the first column of each 3 column group</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>city_names <span class="ot">&lt;-</span> <span class="fu">names</span>(car_thefts)[<span class="fu">seq</span>(<span class="dv">2</span>, <span class="fu">ncol</span>(car_thefts), <span class="at">by =</span> <span class="dv">3</span>)]</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Give each city's columns temporary names</span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="fu">names</span>(car_thefts) <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>  <span class="st">"month"</span>,</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.vector</span>(<span class="fu">sapply</span>(<span class="fu">seq_along</span>(city_names), <span class="cf">function</span>(i) {</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="fu">c</span>(</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(<span class="st">"city"</span>, i, <span class="st">"_kia_hyundai"</span>),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(<span class="st">"city"</span>, i, <span class="st">"_all"</span>),</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>      <span class="fu">paste0</span>(<span class="st">"city"</span>, i, <span class="st">"_percent"</span>)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>  }))</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Transform the data from wide to long format so each row represents a city and month, separate city and state names, and rename the columns.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>car_thefts_long <span class="ot">&lt;-</span> car_thefts <span class="sc">|&gt;</span></span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="sc">-</span>month,</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="fu">c</span>(<span class="st">"city_id"</span>, <span class="st">".value"</span>),</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_pattern =</span> <span class="st">"^city(</span><span class="sc">\\</span><span class="st">d+)_(kia_hyundai|all|percent)$"</span></span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">city =</span> city_names[<span class="fu">as.integer</span>(city_id)]) <span class="sc">|&gt;</span></span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>  tidyr<span class="sc">::</span><span class="fu">separate</span>(</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    city,</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">into =</span> <span class="fu">c</span>(<span class="st">"city"</span>, <span class="st">"state"</span>),</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">sep =</span> <span class="st">",</span><span class="sc">\\</span><span class="st">s*"</span>,</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> <span class="st">"right"</span>,</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">extra =</span> <span class="st">"merge"</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>city_id) <span class="sc">|&gt;</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">kia_hyundai_count =</span> kia_hyundai,</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_vehicle_count =</span> all,</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">theft_percentage =</span> percent</span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(car_thefts_long)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 × 6
+  month  kia_hyundai_count total_vehicle_count theft_percentage city       state
+  &lt;chr&gt;  &lt;chr&gt;             &lt;chr&gt;               &lt;chr&gt;            &lt;chr&gt;      &lt;chr&gt;
+1 Dec/19 48                615                 8%               Denver     &lt;NA&gt; 
+2 Dec/19 13                103                 13%              El Paso    &lt;NA&gt; 
+3 Dec/19 13                592                 2%               Portland   &lt;NA&gt; 
+4 Dec/19 &lt;NA&gt;              &lt;NA&gt;                &lt;NA&gt;             Atlanta    &lt;NA&gt; 
+5 Dec/19 46                767                 6%               Chicago    &lt;NA&gt; 
+6 Dec/19 &lt;NA&gt;              &lt;NA&gt;                &lt;NA&gt;             Virginia … &lt;NA&gt; </code></pre>
+</div>
+</div>
+<p>Convert the theft percentage column to numeric format by extracting only the numbers and removing any extra characters.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>car_thefts_long <span class="ot">&lt;-</span> car_thefts_long <span class="sc">|&gt;</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="at">theft_percentage =</span> readr<span class="sc">::</span><span class="fu">parse_number</span>(</span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">as.character</span>(theft_percentage)</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: There was 1 warning in `mutate()`.
+ℹ In argument: `theft_percentage =
+  readr::parse_number(as.character(theft_percentage))`.
+Caused by warning:
+! 1 parsing failure.
+row col expected actual
+905  -- a number    N/A</code></pre>
+</div>
+</div>
+<p>Calculate the average theft percentage for each city, ignoring missing values, and sort the results from highest to lowest. This makes it easier to identify and compare cities with the highest average Kia and Hyundai theft percentages.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>city_summary <span class="ot">&lt;-</span> car_thefts_long <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(city) <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">average_percentage =</span> <span class="fu">mean</span>(theft_percentage, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(average_percentage))</span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>city_summary</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 70 × 2
+   city           average_percentage
+   &lt;chr&gt;                       &lt;dbl&gt;
+ 1 Milwaukee                    46.0
+ 2 Atlanta                      23.7
+ 3 Rochester                    23.2
+ 4 St. Petersburg               23.2
+ 5 Cincinatti                   22.4
+ 6 Denver                       21.4
+ 7 Minneapolis                  20.5
+ 8 Providence                   18.0
+ 9 Buffalo                      17.9
+10 Durham                       16.9
+# ℹ 60 more rows</code></pre>
+</div>
+</div>
+<p>Select the ten cities with the highest valid average theft percentages. It excludes non-finite values like Na and NaN, and limits the results to exactly ten cities, even if there are ties.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>top_10_cities <span class="ot">&lt;-</span> city_summary <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">is.finite</span>(average_percentage)) <span class="sc">|&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice_max</span>(</span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">order_by =</span> average_percentage,</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="dv">10</span>,</span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">with_ties =</span> <span class="cn">FALSE</span></span>
+<span id="cb14-7"><a href="#cb14-7" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>Create a horizontal bar chart showing the ten cities with the highest average Kia/Hyundai theft percentages. Each bar is labeled with its percentage, and a color gradient helps distinguish values. The chart includes a title, axis labels, and extra space for the percentage labels so the results are easier to read.</p>
+<div class="cell">
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>  top_10_cities,</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">aes</span>(</span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="fu">reorder</span>(city, average_percentage),</span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> average_percentage,</span>
+<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">fill =</span> average_percentage</span>
+<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>) <span class="sc">+</span></span>
+<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>() <span class="sc">+</span></span>
+<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text</span>(</span>
+<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">label =</span> <span class="fu">paste0</span>(<span class="fu">round</span>(average_percentage, <span class="dv">1</span>), <span class="st">"%"</span>)),</span>
+<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">hjust =</span> <span class="sc">-</span><span class="fl">0.2</span></span>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">coord_flip</span>() <span class="sc">+</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_gradient</span>(</span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">low =</span> <span class="st">"lightblue"</span>,</span>
+<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="at">high =</span> <span class="st">"darkblue"</span>,</span>
+<span id="cb15-18"><a href="#cb15-18" aria-hidden="true" tabindex="-1"></a>    <span class="at">guide =</span> <span class="st">"none"</span></span>
+<span id="cb15-19"><a href="#cb15-19" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-20"><a href="#cb15-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb15-21"><a href="#cb15-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Top 10 Cities by Average Kia/Hyundai Theft Percentage"</span>,</span>
+<span id="cb15-22"><a href="#cb15-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"City"</span>,</span>
+<span id="cb15-23"><a href="#cb15-23" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Average theft percentage (%)"</span></span>
+<span id="cb15-24"><a href="#cb15-24" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb15-25"><a href="#cb15-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb15-26"><a href="#cb15-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_y_continuous</span>(</span>
+<span id="cb15-27"><a href="#cb15-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">expand =</span> <span class="fu">expansion</span>(<span class="at">mult =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fl">0.12</span>))</span>
+<span id="cb15-28"><a href="#cb15-28" aria-hidden="true" tabindex="-1"></a>  )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="Project2-3_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="conclusion" class="level2">
+<h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>The dataset was transformed from wide to long format, with one row for each city and month and separate columns for Kia/Hyundai theft counts, total vehicle counts, and theft percentages. The analysis calculated the average theft percentage for each city and used a bar chart to compare the ten cities with the highest averages. The results showed differences across cities, with Milwaukee having the highest average percentage among the cities examined. Missing values were retained when their meaning could not be confirmed, rather than automatically replacing them with zeros.</p>
+<p>For future analysis, the dataset could be used to examine how Kia/Hyundai theft percentages changed over time and whether cities experienced similar trends the same time range.</p>
+</section>
+<section id="ai-assistance" class="level2">
+<h2 class="anchored" data-anchor-id="ai-assistance">AI Assistance</h2>
+<p>ChatGPT was used as a supplemental tool to help understand R syntax, troubleshoot code, explain data tidying and transformation steps, and clarify the analysis of Kia and Hyundai theft percentages across U.S. cities (OpenAI, 2026).</p>
+<p>OpenAI. (2026). ChatGPT [Generative AI chat]. <a href="https://chatgpt.com/" class="uri">https://chatgpt.com/</a></p>
 </section>
 
 </main>
